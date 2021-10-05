@@ -24,7 +24,7 @@ public class SetupRemote implements Command {
         final StoredConfig storedConfig = git.getRepository().getConfig();
 
         final String repoName = new GetRepoName().execute(currentPath);
-        final String remoteURL = integration.createRepository(repoName);
+        final String remoteURL = this.getAppropriate(integration.createRepository(repoName));
         storedConfig.setString("remote", "origin", "url", remoteURL);
         storedConfig.setString("remote", "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
 
@@ -38,5 +38,12 @@ public class SetupRemote implements Command {
 
         git.push().setCredentialsProvider(integration.getCredentialsProvider()).call();
         return repoName;
+    }
+
+    public String getAppropriate remoteURL(String url) {
+        if (url.split(":")[0].equalsIgnoreCase("http")) {
+            url = url.replace("http", "https");
+        }
+        return url;
     }
 }
